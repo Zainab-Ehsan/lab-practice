@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Student Management System</h1>
+
+    <input id="name" placeholder="Student Name">
+
+    <input id="course" placeholder="Course">
+
+    <button onclick="addStudent()">Add Student</button>
+
+    <h2>Students</h2>
+
+    <ul id="students"></ul>
+
+</div>
+
+<script>
+
+async function loadStudents() {
+
+    const response = await fetch("/api/students");
+
+    const data = await response.json();
+
+    const list = document.getElementById("students");
+
+    list.innerHTML = "";
+
+    data.forEach(student => {
+
+        const item = document.createElement("li");
+
+        item.textContent =
+            student.name + " - " + student.course;
+
+        list.appendChild(item);
+
+    });
+
+}
+
+async function addStudent() {
+
+    const name = document.getElementById("name").value;
+
+    const course = document.getElementById("course").value;
+
+    const response = await fetch("/api/students", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            name,
+            course
+        })
+
+    });
+
+    if (!response.ok) {
+        alert("Failed to add student");
+        return;
+    }
+
+    document.getElementById("name").value = "";
+
+    document.getElementById("course").value = "";
+
+    loadStudents();
+
+}
+
+loadStudents();
+
+</script>
+
+</body>
+</html>
